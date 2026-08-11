@@ -48,7 +48,6 @@ class CardinalFst(GraphFst):
         graph_ties_prefix = pynini.string_file(get_abs_path("data/numbers/ties_prefix.tsv"))
         graph_people = pynini.string_file(get_abs_path("data/numbers/digit_people.tsv"))
         graph_special = pynini.string_file(get_abs_path("data/numbers/special_numbers.tsv"))
-        graph_case_suffix = pynini.string_file(get_abs_path("data/numbers/case_suffix.tsv"))
         graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
         graph_thousand = pynini.string_file(get_abs_path("data/numbers/thousand.tsv"))
         graph_lakh = pynini.string_file(get_abs_path("data/numbers/lakh.tsv"))
@@ -64,8 +63,6 @@ class CardinalFst(GraphFst):
             | ((graph_people | graph_special) @ two_te_digits)
         )
         two_digit_or_zeros = graph_two_digit | pynutil.insert("౦౦")
-
-        optional_case = pynini.closure(graph_case_suffix, 0, 1)
         optional_one = pynini.closure(pynutil.delete("ఒక") + delete_space, 0, 1)
 
         delete_hundred = graph_hundred @ pynini.accep("")
@@ -112,9 +109,10 @@ class CardinalFst(GraphFst):
 
         graph_leading_zeros = graph_zero + pynini.closure(delete_space + (graph_zero | graph_digit), 1)
 
-        graph = (graph_number | graph_zero) + optional_case
+        graph = graph_number | graph_zero
         graph |= graph_leading_zeros
         graph = graph.optimize()
+        self.graph_no_exception = graph
 
         optional_minus_graph = pynini.closure(
             pynutil.insert("negative: ") + pynini.cross(MINUS, "\"-\"") + NEMO_SPACE,

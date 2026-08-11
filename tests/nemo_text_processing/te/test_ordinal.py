@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import pytest
 from parameterized import parameterized
 
@@ -20,12 +21,19 @@ from nemo_text_processing.inverse_text_normalization.inverse_normalize import In
 from ..utils import CACHE_DIR, parse_test_case_file
 
 
-class TestCardinal:
-    inverse_normalizer = InverseNormalizer(lang='te', cache_dir=CACHE_DIR, overwrite_cache=False)
+class TestOrdinal:
+    inverse_normalizer = InverseNormalizer(
+        lang="te",
+        cache_dir=CACHE_DIR,
+        overwrite_cache=False,
+    )
 
-    @parameterized.expand(parse_test_case_file('te/data_inverse_text_normalization/test_cases_cardinal.txt'))
-    # @pytest.mark.run_only_on('CPU')
+    @parameterized.expand(parse_test_case_file("te/data_inverse_text_normalization/test_cases_ordinal.txt"))
+    # @pytest.mark.run_only_on("CPU")
     @pytest.mark.unit
     def test_denorm(self, test_input, expected):
-        pred = self.inverse_normalizer.inverse_normalize(test_input, verbose=False)
+        pred = self.inverse_normalizer.inverse_normalize(
+            test_input,
+            verbose=False,
+        )
         assert pred == expected
