@@ -48,6 +48,7 @@ class CardinalFst(GraphFst):
         graph_ties_prefix = pynini.string_file(get_abs_path("data/numbers/ties_prefix.tsv"))
         graph_people = pynini.string_file(get_abs_path("data/numbers/digit_people.tsv"))
         graph_special = pynini.string_file(get_abs_path("data/numbers/special_numbers.tsv"))
+        graph_case_suffix = pynini.string_file(get_abs_path("data/numbers/case_suffix.tsv"))
         graph_hundred = pynini.string_file(get_abs_path("data/numbers/hundred.tsv"))
         graph_thousand = pynini.string_file(get_abs_path("data/numbers/thousand.tsv"))
         graph_lakh = pynini.string_file(get_abs_path("data/numbers/lakh.tsv"))
