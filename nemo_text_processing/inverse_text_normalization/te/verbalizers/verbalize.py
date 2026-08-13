@@ -15,19 +15,23 @@
 from nemo_text_processing.inverse_text_normalization.te.graph_utils import GraphFst
 from nemo_text_processing.inverse_text_normalization.te.verbalizers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.te.verbalizers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.te.verbalizers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.te.verbalizers.ordinal import OrdinalFst
 from nemo_text_processing.inverse_text_normalization.te.verbalizers.word import WordFst
 
 
 class VerbalizeFst(GraphFst):
     """
-    Final classification grammar for Telugu ITN cardinal and decimal processing.
+    Verbalizes Telugu ITN cardinal, ordinal, decimal, fraction and word classes.
     """
 
     def __init__(self):
         super().__init__(name="verbalize", kind="verbalize")
 
         decimal_graph = DecimalFst().fst
+        fraction_graph = FractionFst().fst
+        ordinal_graph = OrdinalFst().fst
         cardinal_graph = CardinalFst().fst
         word_graph = WordFst().fst
 
-        self.fst = (decimal_graph | cardinal_graph | word_graph).optimize()
+        self.fst = (decimal_graph | fraction_graph | ordinal_graph | cardinal_graph | word_graph).optimize()
