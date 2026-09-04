@@ -16,7 +16,7 @@ import pynini
 from pynini.lib import pynutil
 
 from nemo_text_processing.inverse_text_normalization.te.graph_utils import NEMO_CHAR, GraphFst
-from nemo_text_processing.inverse_text_normalization.te.utils import get_abs_path, load_labels
+from nemo_text_processing.inverse_text_normalization.te.utils import get_abs_path
 
 
 class OrdinalFst(GraphFst):
@@ -38,15 +38,6 @@ class OrdinalFst(GraphFst):
 
         graph_hundred = pynini.string_file(get_abs_path("data/ordinals/hundred_digit.tsv"))
 
-        morph_features = load_labels(get_abs_path("data/ordinals/morph_features.tsv"))
-
-        canonical_features = {row[1] for row in morph_features}
-
-        if len(canonical_features) != 1:
-            raise ValueError("Expected exactly one canonical ordinal morphosyntactic feature")
-
-        morph_feature = next(iter(canonical_features))
-
         ordinal_tail = pynini.union(
             graph_digit,
             graph_teens,
@@ -57,12 +48,8 @@ class OrdinalFst(GraphFst):
             pynini.closure(NEMO_CHAR) + ordinal_tail,
             cardinal_graph,
         ).optimize()
+        self.graph_no_exception = graph
 
-        final_graph = (
-            pynutil.insert('integer: "')
-            + graph
-            + pynutil.insert('"')
-            + pynutil.insert(f' morphosyntactic_features: "{morph_feature}"')
-        )
+        final_graph = pynutil.insert('integer: "') + graph + pynutil.insert('"')
 
         self.fst = self.add_tokens(final_graph).optimize()

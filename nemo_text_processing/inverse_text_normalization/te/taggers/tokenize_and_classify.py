@@ -25,6 +25,7 @@ from nemo_text_processing.inverse_text_normalization.te.graph_utils import (
     generator_main,
 )
 from nemo_text_processing.inverse_text_normalization.te.taggers.cardinal import CardinalFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.date import DateFst
 from nemo_text_processing.inverse_text_normalization.te.taggers.decimal import DecimalFst
 from nemo_text_processing.inverse_text_normalization.te.taggers.fraction import FractionFst
 from nemo_text_processing.inverse_text_normalization.te.taggers.ordinal import OrdinalFst
@@ -57,10 +58,12 @@ class ClassifyFst(GraphFst):
             logging.info("Creating Telugu ClassifyFst grammar.")
 
             cardinal = CardinalFst()
+            ordinal = OrdinalFst(cardinal)
             decimal = DecimalFst(cardinal)
             fraction = FractionFst(cardinal)
-            ordinal = OrdinalFst(cardinal)
+            date = DateFst(cardinal, ordinal)
 
+            date_graph = date.fst
             decimal_graph = decimal.fst
             fraction_graph = fraction.fst
             ordinal_graph = ordinal.fst
@@ -68,7 +71,8 @@ class ClassifyFst(GraphFst):
             word_graph = WordFst().fst
 
             classify = (
-                pynutil.add_weight(decimal_graph, 1.1)
+                pynutil.add_weight(date_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
                 | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(ordinal_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)

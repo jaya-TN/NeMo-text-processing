@@ -85,7 +85,10 @@ class CardinalFst(GraphFst):
         one_crore_value = graph_crore @ pynini.closure(NEMO_TE_DIGIT, 1)
 
         hundred_prefix = (
-            (graph_digit + delete_space + delete_hundred) | (optional_one + one_hundred_value) | pynutil.insert("౦")
+            (graph_two_digit_multiplier + delete_space + delete_hundred)
+            | (graph_digit + delete_space + delete_hundred)
+            | (optional_one + one_hundred_value)
+            | pynutil.insert("౦")
         )
 
         graph_hundreds = hundred_prefix + delete_space + two_digit_or_zeros
