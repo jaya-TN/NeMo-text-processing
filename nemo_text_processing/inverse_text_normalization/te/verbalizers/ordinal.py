@@ -30,16 +30,6 @@ class OrdinalFst(GraphFst):
             + pynini.closure(NEMO_NOT_QUOTE, 1)
             + pynutil.delete('"')
         )
-
-        morph = (
-            delete_space
-            + pynutil.delete("morphosyntactic_features:")
-            + delete_space
-            + pynutil.delete('"')
-            + pynini.closure(NEMO_NOT_QUOTE, 1)
-            + pynutil.delete('"')
-        )
-
-        graph = integer + morph
+        graph = integer + pynutil.insert("వ")
 
         self.fst = self.delete_tokens(graph).optimize()
