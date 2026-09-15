@@ -26,13 +26,13 @@ from nemo_text_processing.inverse_text_normalization.te.graph_utils import (
 )
 from nemo_text_processing.inverse_text_normalization.te.taggers.cardinal import CardinalFst
 from nemo_text_processing.inverse_text_normalization.te.taggers.decimal import DecimalFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.fraction import FractionFst
+from nemo_text_processing.inverse_text_normalization.te.taggers.measure import MeasureFst
 from nemo_text_processing.inverse_text_normalization.te.taggers.word import WordFst
 
 
 class ClassifyFst(GraphFst):
-    """
-    Final classification grammar for Telugu ITN cardinal processing.
-    """
+    """Final classification grammar for Telugu ITN."""
 
     def __init__(
         self,
@@ -50,18 +50,25 @@ class ClassifyFst(GraphFst):
 
         if not overwrite_cache and far_file and os.path.exists(far_file):
             self.fst = pynini.Far(far_file, mode="r")["tokenize_and_classify"]
-            logging.info(f"ClassifyFst.fst was restored from {far_file}.")
+            logging.info("ClassifyFst.fst was restored from %s.", far_file)
         else:
             logging.info("Creating Telugu ClassifyFst grammar.")
 
             cardinal = CardinalFst()
             decimal = DecimalFst(cardinal)
+            fraction = FractionFst(cardinal)
+            measure = MeasureFst(cardinal, decimal, fraction)
+
+            measure_graph = measure.fst
             decimal_graph = decimal.fst
+            fraction_graph = fraction.fst
             cardinal_graph = cardinal.fst
             word_graph = WordFst().fst
 
             classify = (
-                pynutil.add_weight(decimal_graph, 1.1)
+                pynutil.add_weight(measure_graph, 1.1)
+                | pynutil.add_weight(decimal_graph, 1.1)
+                | pynutil.add_weight(fraction_graph, 1.1)
                 | pynutil.add_weight(cardinal_graph, 1.1)
                 | pynutil.add_weight(word_graph, 100)
             )
@@ -78,4 +85,4 @@ class ClassifyFst(GraphFst):
                     far_file,
                     {"tokenize_and_classify": self.fst},
                 )
-                logging.info(f"ClassifyFst grammars are saved to {far_file}.")
+                logging.info("ClassifyFst grammars are saved to %s.", far_file)

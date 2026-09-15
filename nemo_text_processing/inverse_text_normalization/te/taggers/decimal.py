@@ -52,4 +52,5 @@ class DecimalFst(GraphFst):
             pynini.closure(graph_integer + delete_extra_space, 0, 1) + point + delete_extra_space + graph_fractional
         )
 
+        self.final_graph_wo_negative = final_graph
         self.fst = self.add_tokens(final_graph).optimize()
